@@ -1,21 +1,27 @@
-import { useLayoutEffect } from 'react'
+import { Suspense, lazy, useLayoutEffect } from 'react'
 import Hero from './components/Hero'
-import Showroom from './components/Showroom'
 import Enquiry from './components/Enquiry'
 import { Footer, Header, ListPill, Nudge, ScrollProgress, TabBar } from './components/Chrome'
-import { Custom, Marquee, Stats, Visit, Why } from './components/Sections'
+import { Custom, Faq, Marquee, Stats, Visit, Why } from './components/Sections'
 import { EnquiryProvider } from './state/Enquiry'
 import Fx from './components/Fx'
 
-const REVEAL = 'section > .wrap > h2, section > .wrap > .sub, .livebadge, .f, .logocard, .custom > *, .visit > *, .founder > *, .depts, .elist, .stats .wrap > div, .cats, .toolbar'
+// The showroom carries the 3D engine, so it loads after the first screen (faster start, better Google speed score)
+const Showroom = lazy(() => import('./components/Showroom'))
+
+const REVEAL = 'section > .wrap > h2, section > .wrap > .sub, .livebadge, .f, .logocard, .custom > *, .visit > *, .founder > *, .depts, .elist, .stats .wrap > div, .cats, .toolbar, .faq'
 
 export default function App() {
-  // Scroll-reveal: sections slide and bounce in as they come into view
+  // Scroll-reveal: sections slide and bounce in as they come into view (also for parts that load later)
   useLayoutEffect(() => {
-    const els = [...document.querySelectorAll<HTMLElement>(REVEAL)]
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }), { threshold: 0.12 })
-    els.forEach(el => { el.classList.add('rv'); el.style.transitionDelay = `${(Array.prototype.indexOf.call(el.parentElement!.children, el) % 4) * 90}ms`; io.observe(el) })
-    return () => io.disconnect()
+    const scan = () => document.querySelectorAll<HTMLElement>(REVEAL).forEach(el => {
+      if (el.classList.contains('rv')) return
+      el.classList.add('rv'); el.style.transitionDelay = `${(Array.prototype.indexOf.call(el.parentElement!.children, el) % 4) * 90}ms`; io.observe(el)
+    })
+    scan()
+    const mo = new MutationObserver(scan); mo.observe(document.getElementById('top')!, { childList: true, subtree: true })
+    return () => { io.disconnect(); mo.disconnect() }
   }, [])
   return (
     <EnquiryProvider>
@@ -25,10 +31,13 @@ export default function App() {
       <main id="top">
         <Hero />
         <Marquee />
-        <Showroom />
+        <Suspense fallback={<section id="best" className="show" style={{ minHeight: 900 }} aria-busy="true" />}>
+          <Showroom />
+        </Suspense>
         <Enquiry />
         <Why />
         <Custom />
+        <Faq />
         <Stats />
         <Visit />
       </main>

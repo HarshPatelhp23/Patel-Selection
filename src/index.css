@@ -358,3 +358,16 @@ section > .wrap > h2.in::after{width:clamp(70px,12vw,150px)}
 @media (max-width:899px){.hero h1{font-size:clamp(36px,10.5vw,56px)}}
 @media (max-width:899px){.hero{min-height:calc(100svh + 200px)}}
 .hero .hg{margin-block:0}
+
+/* ===== FAQ ===== */
+.faq{display:grid;gap:12px;max-width:900px}
+.faq details{background:#fff;border:2px solid var(--line);border-radius:18px;padding:0 20px;transition:border-color .2s}
+.faq details[open]{border-color:var(--blue);border-left:8px solid var(--red)}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 0;font:800 clamp(17px,2.2vw,22px) var(--d);color:var(--blue)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary span{flex:1}
+.faq summary i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--red);position:relative}
+.faq summary i::before,.faq summary i::after{content:'';position:absolute;left:50%;top:50%;width:12px;height:2.5px;margin:-1px 0 0 -6px;background:#fff;border-radius:2px;transition:transform .25s}
+.faq summary i::after{transform:rotate(90deg)}
+.faq details[open] summary i::after{transform:rotate(0)}
+.faq p{padding:0 0 18px;color:var(--mut);font-size:17px;max-width:70ch}

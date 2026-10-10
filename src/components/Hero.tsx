@@ -2,15 +2,15 @@ import { useEffect, useRef } from 'react'
 import Icon from './Icon'
 import { PHONE, PHONE_DISPLAY } from '../config'
 import { waLink } from '../data/products'
-import { mountHero } from '../three/heroScene'
 
 /** The WebGL hero scene (see three/heroScene.ts). Falls back to the CSS gradient if WebGL is unavailable. */
 function HeroScene() {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
-    let dispose = () => {}
-    try { dispose = mountHero(ref.current!, ref.current!.parentElement!) } catch (e) { console.warn('3D hero unavailable', e) }
-    return () => dispose()
+    let dispose = () => {}, dead = false
+    // the 3D engine downloads after the headline and buttons are already on screen
+    import('../three/heroScene').then(m => { if (!dead) dispose = m.mountHero(ref.current!, ref.current!.parentElement!) }).catch(e => console.warn('3D hero unavailable', e))
+    return () => { dead = true; dispose() }
   }, [])
   return <canvas id="cv" ref={ref} aria-hidden="true" />
 }
@@ -24,7 +24,7 @@ export default function Hero() {
         <div className="hshade" aria-hidden="true" />
         <div className="wrap hg">
           <div>
-            <span className="pill"><i className="dot" /> Ambli-Bopal Road, Ahmedabad</span>
+            <span className="pill"><i className="dot" /> Plastic Chairs &amp; Home Ware · Bopal, Ahmedabad</span>
             <h1>
               {words.map((w, i) => <span className="w" style={{ animationDelay: `${i * 90}ms` }} key={i}>{w}&nbsp;</span>)}
               <em className="w" style={{ animationDelay: '450ms' }}>under one roof.</em>

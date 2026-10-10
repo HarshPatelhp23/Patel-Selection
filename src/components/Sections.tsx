@@ -4,6 +4,7 @@ import Logo from './Logo'
 import { PHONE, PHONE_DISPLAY, IMG_BASE } from '../config'
 import { BRANDS, RANGES, waLink } from '../data/products'
 import { FOUNDER } from '../data/founder'
+import FAQ from '../data/faq.json'
 
 export function Marquee() {
   const a = [...BRANDS, ...BRANDS], b = [...RANGES, ...RANGES]
@@ -18,7 +19,7 @@ export function Marquee() {
 export function Why() {
   const f: Array<[Parameters<typeof Icon>[0]['name'], string, string]> = [
     ['tag', 'Best market rates', 'We share the latest rate on WhatsApp within 1 to 2 hours, so you never overpay.'],
-    ['check', 'Trusted brands', 'Nilkamal, National, Cello, Muraj, Sky and more. All major chair companies available.'],
+    ['check', 'Trusted brands', 'Nilkamal, National, Cello, Muraj, Sky and more. All major plastic chair companies available in Ahmedabad.'],
     ['truck', 'Free delivery on 10+ chairs', 'Smaller orders pay a delivery charge, confirmed when you order.'],
     ['camera', 'Your own choice', 'Send us a photo of any product you like and we will arrange it for you.'],
   ]
@@ -79,12 +80,30 @@ export function Stats() {
   )
 }
 
+export function Faq() {
+  const [open, setOpen] = useState(0)
+  return (
+    <section id="faq" className="tint"><div className="wrap">
+      <h2>Questions customers ask us</h2>
+      <p className="sub">Plastic chairs, tables and home ware in Ahmedabad: quick answers about rates, brands and delivery.</p>
+      <div className="faq">
+        {FAQ.map((f, i) => (
+          <details key={f.q} open={open === i} onToggle={e => { if ((e.currentTarget as HTMLDetailsElement).open) setOpen(i); else if (open === i) setOpen(-1) }}>
+            <summary><span>{f.q}</span><i aria-hidden="true" /></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div></section>
+  )
+}
+
 export function Founder() {
   const F = FOUNDER
   return (
     <div className="founder">
       <div className="fphoto">
-        <img src={`${import.meta.env.BASE_URL}${F.photo}`} alt={`${F.name}, founder of Patel Selection`} />
+        <img src={`${import.meta.env.BASE_URL}${F.photo}`} alt={`${F.name}, founder of Patel Selection`} width={785} height={1000} loading="lazy" decoding="async" />
         <div className="fyears"><strong>{F.years}</strong><small>years</small></div>
       </div>
       <div className="ftext">
@@ -102,7 +121,7 @@ export function Visit() {
   return (
     <section id="visit"><div className="wrap">
       <h2>Visit the shop</h2>
-      <p className="sub">Easy to find on Ambli-Bopal Road, between the Tata Motors and Mercedes showrooms.</p>
+      <p className="sub">Easy to find on Ambli-Bopal Road, Ahmedabad, between the Tata Motors and Mercedes showrooms and close to Bopal, South Bopal and Ambli.</p>
       <div className="visit">
         <div className="card">
           <div className="addr">Patel Selection<br />Opp. Tata Motors Show Room, Nr. Mercedes Show Room, Ambli-Bopal Road, Ahmedabad-380058</div>
@@ -110,7 +129,7 @@ export function Visit() {
           <a className="btn red" href={`tel:${PHONE}`}><Icon name="phone" /> Call {PHONE_DISPLAY}</a>
         </div>
         <div className="shopbox">
-          <img src={`${IMG_BASE}shop.jpg`} alt="Patel Selection shop front on Ambli-Bopal Road" />
+          <img src={`${IMG_BASE}shop.jpg`} alt="Patel Selection plastic chairs and home ware shop front on Ambli-Bopal Road, Ahmedabad" width={1200} height={900} loading="lazy" decoding="async" />
           <div><a className="btn ghost" href="https://www.google.com/maps/search/?api=1&query=Patel+Selection+Ambli+Bopal+Road+Ahmedabad+380058" target="_blank" rel="noopener noreferrer"><Icon name="pin" /> Get directions</a></div>
         </div>
       </div>
