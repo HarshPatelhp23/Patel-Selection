@@ -38,7 +38,7 @@ function photoManifest(): Plugin {
  * SEO: writes robots.txt and sitemap.xml with your real domain, and puts the FAQ into the page's
  * Google "FAQ" data (JSON-LD) so it always matches the FAQ shown on the site.
  */
-function seo(site: string): Plugin {
+function seo(site: string, isBuild: boolean): Plugin {
   const faq = JSON.parse(readFileSync(join(process.cwd(), 'src/data/faq.json'), 'utf8')) as Array<{ q: string; a: string }>
   const faqLd = JSON.stringify({
     '@context': 'https://schema.org', '@type': 'FAQPage',
@@ -46,8 +46,8 @@ function seo(site: string): Plugin {
   })
   return {
     name: 'seo',
-    transformIndexHtml: html => html.replace('%FAQ_JSONLD%', faqLd),
-    buildStart() { if (site.includes('YOUR-DOMAIN')) this.warn('VITE_SITE_URL in .env.production is still the placeholder. Set your real domain before deploying.') },
+    transformIndexHtml: html => html.split('__FAQ_JSONLD__').join(faqLd).split('__SITE_URL__').join(site),
+    buildStart() { if (isBuild && site.includes('YOUR-DOMAIN')) this.warn('siteUrl in site.config.json is still the placeholder. Put your real website address there before deploying.') },
     generateBundle() {
       const today = new Date().toISOString().slice(0, 10)
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n` })
@@ -58,9 +58,12 @@ function seo(site: string): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
-  const site = (loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL || 'http://localhost:5173').replace(/\/$/, '')
+  // Website address: site.config.json (or, optionally, a VITE_SITE_URL environment variable on your host)
+  let configured = ''
+  try { configured = JSON.parse(readFileSync(join(process.cwd(), 'site.config.json'), 'utf8')).siteUrl || '' } catch { /* file missing */ }
+  const site = (loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL || configured || 'http://localhost:5173').replace(/\/$/, '')
   return {
-    plugins: [react(), photoManifest(), seo(site)],
+    plugins: [react(), photoManifest(), seo(site, mode === 'production')],
     server: {
       allowedHosts: ['.ngrok-free.app', '.ngrok.app', '.ngrok.io'],
       port: 5173,

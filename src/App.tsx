@@ -14,9 +14,14 @@ const REVEAL = 'section > .wrap > h2, section > .wrap > .sub, .livebadge, .f, .l
 export default function App() {
   // Scroll-reveal: sections slide and bounce in as they come into view (also for parts that load later)
   useLayoutEffect(() => {
+    // `seen` lives inside this effect on purpose: in development React runs effects twice, and a fresh `seen`
+    // makes sure the second run observes everything again (otherwise sections stay invisible).
+    const seen = new WeakSet<Element>()
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }), { threshold: 0.12 })
     const scan = () => document.querySelectorAll<HTMLElement>(REVEAL).forEach(el => {
-      if (el.classList.contains('rv')) return
+      if (seen.has(el)) return
+      seen.add(el)
+      if (el.classList.contains('in')) return
       el.classList.add('rv'); el.style.transitionDelay = `${(Array.prototype.indexOf.call(el.parentElement!.children, el) % 4) * 90}ms`; io.observe(el)
     })
     scan()

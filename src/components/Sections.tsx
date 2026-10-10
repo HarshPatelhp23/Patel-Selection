@@ -74,8 +74,8 @@ function Count({ n, label }: { n: number; label: string }) {
 export function Stats() {
   return (
     <div className="stats"><div className="wrap">
-      <Count n={25} label="years in Ahmedabad" /><Count n={7} label="product ranges" />
-      <Count n={BRANDS.length - 1} label="leading brands" /><Count n={2} label="hours or less to reply" />
+      <Count n={25} label="+ years in Ahmedabad" /><Count n={500} label="+ product ranges" />
+      <Count n={25} label="+ leading brands" /><Count n={2} label="+ hours or less to reply" />
     </div></div>
   )
 }
@@ -103,11 +103,11 @@ export function Founder() {
   return (
     <div className="founder">
       <div className="fphoto">
-        <img src={`${import.meta.env.BASE_URL}${F.photo}`} alt={`${F.name}, founder of Patel Selection`} width={785} height={1000} loading="lazy" decoding="async" />
+        <img src={`${import.meta.env.BASE_URL}${F.photo}`} alt={`${F.name}, Owner of Patel Selection`} width={785} height={1000} loading="lazy" decoding="async" />
         <div className="fyears"><strong>{F.years}</strong><small>years</small></div>
       </div>
       <div className="ftext">
-        <span className="livebadge">A SALUTE TO OUR FOUNDER</span>
+        <span className="livebadge">Arvind Patel</span>
         <h3>{F.headline}</h3>
         <p className="fstory">{F.story}</p>
         <div className="fname"><b>{F.name}</b><small>{F.role}</small></div>

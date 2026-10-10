@@ -1,7 +1,7 @@
 // EDIT THIS: the founder tribute shown in the "Visit the shop" section.
 export const FOUNDER = {
   name: 'Arvind Patel',
-  role: 'Founder, Patel Selection',
+  role: 'Owner, Patel Selection',
   photo: 'images/founder.jpg',   // public/images/founder.jpg
   years: '25+',
   headline: 'The man who built it all, from scratch.',
