@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import Icon from './Icon'
 import { PHONE, PHONE_DISPLAY } from '../config'
-import { waLink } from '../data/products'
+import { CATEGORIES, waLink } from '../data/products'
+import { CAT_ICON } from '../data/catIcons'
+import { jumpToCategory } from '../state/jump'
 
 /** The WebGL hero scene (see three/heroScene.ts). Falls back to the CSS gradient if WebGL is unavailable. */
 function HeroScene() {
@@ -33,6 +35,14 @@ export default function Hero() {
             <div className="cta">
               <a className="btn red" href={`tel:${PHONE}`}><Icon name="phone" /> Call {PHONE_DISPLAY}</a>
               <a className="btn ghost" href={waLink('Hello Patel Selection, I need a rate.')} target="_blank" rel="noopener noreferrer"><Icon name="chat" /> WhatsApp us</a>
+            </div>
+            <div className="hcats" role="group" aria-label="Jump straight to a product type">
+              <span className="hcats-t">Jump to a product</span>
+              {CATEGORIES.map((c, i) => (
+                <button key={c} style={{ animationDelay: `${700 + i * 70}ms` }} onClick={() => jumpToCategory(c)}>
+                  <svg viewBox="0 0 24 24" className="ci" aria-hidden="true"><path d={CAT_ICON[c][0]} /></svg><span>{c}</span>
+                </button>
+              ))}
             </div>
             <p className="hint">Move your mouse or finger near the furniture. Tap anywhere to make it fly.</p>
           </div>

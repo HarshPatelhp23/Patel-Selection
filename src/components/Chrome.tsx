@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import Icon from './Icon'
 import Logo from './Logo'
 import { PHONE, PHONE_DISPLAY } from '../config'
@@ -28,16 +28,44 @@ export function Footer() {
   )
 }
 
-/** Android-style bottom navigation, shown on phones only */
+/** Which part of the page the visitor is looking at, for the glowing marker in the phone dock */
+type Where = 'home' | 'best' | 'list' | 'visit' | null
+const SECTION_OF: Array<[string, Where]> = [['hero', 'home'], ['best', 'best'], ['range', 'list'], ['visit', 'visit']]
+const SLOT: Record<Exclude<Where, null>, number> = { home: 0, best: 1, list: 3, visit: 4 }
+
+/** Floating glass dock for phones: a red marker slides to the section you are in, the call button floats above it. */
 export function TabBar() {
-  const { count } = useEnquiry()
+  const { count, bump, drawer, setDrawer } = useEnquiry()
+  const [where, setWhere] = useState<Where>('home')
+  useEffect(() => {
+    let raf = 0
+    const look = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const y = innerHeight * 0.45
+        let found: Where = null
+        for (const [id, w] of SECTION_OF) {
+          const r = document.getElementById(id)?.getBoundingClientRect()
+          if (r && r.top <= y && r.bottom > y) found = w
+        }
+        setWhere(found)
+      })
+    }
+    addEventListener('scroll', look, { passive: true }); addEventListener('resize', look); look()
+    return () => { cancelAnimationFrame(raf); removeEventListener('scroll', look); removeEventListener('resize', look) }
+  }, [])
+  const on: Where = drawer ? 'list' : where
+  const slot = on ? SLOT[on] : -1
   return (
-    <nav className="tabs" aria-label="App navigation">
-      <a href="#top"><Icon name="home" />Home</a>
-      <a href="#best"><Icon name="bag" />Showroom</a>
-      <a className="fab" href={`tel:${PHONE}`} aria-label="Call Patel Selection"><Icon name="phone" /></a>
-      <a href="#range"><Icon name="list" />My list{count > 0 && <span className="tbadge">{count}</span>}</a>
-      <a href="#visit"><Icon name="pin" />Visit</a>
+    <nav className="tabs" aria-label="App navigation" style={{ '--i': Math.max(0, slot) } as CSSProperties} data-none={slot < 0 ? '' : undefined}>
+      <i className="tblob" aria-hidden="true" />
+      <a href="#top" className={on === 'home' ? 'on' : ''}><Icon name="home" /><span>Home</span></a>
+      <a href="#best" className={on === 'best' ? 'on' : ''}><Icon name="bag" /><span>Showroom</span></a>
+      <div className="fabslot"><a className="fab" href={`tel:${PHONE}`} aria-label="Call Patel Selection"><Icon name="phone" /></a><span>Call</span></div>
+      <a href="#range" className={on === 'list' ? 'on' : ''} onClick={e => { e.preventDefault(); setDrawer(true) }} aria-haspopup="dialog">
+        <span className="ticon" data-listtab><Icon name="list" />{count > 0 && <b className="tbadge" key={bump}>{count}</b>}</span><span>My list</span>
+      </a>
+      <a href="#visit" className={on === 'visit' ? 'on' : ''}><Icon name="pin" /><span>Visit</span></a>
     </nav>
   )
 }

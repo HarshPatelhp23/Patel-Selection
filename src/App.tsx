@@ -5,6 +5,7 @@ import { Footer, Header, ListPill, Nudge, ScrollProgress, TabBar } from './compo
 import { Custom, Faq, Marquee, Stats, Visit, Why } from './components/Sections'
 import { EnquiryProvider } from './state/Enquiry'
 import Fx from './components/Fx'
+import ListDrawer from './components/ListDrawer'
 
 // The showroom carries the 3D engine, so it loads after the first screen (faster start, better Google speed score)
 const Showroom = lazy(() => import('./components/Showroom'))
@@ -50,6 +51,7 @@ export default function App() {
       <TabBar />
       <ListPill />
       <Nudge />
+      <ListDrawer />
     </EnquiryProvider>
   )
 }

@@ -19,6 +19,17 @@ const PATHS = {
   pan: 'M10 20a7 7 0 1 1 0-14 7 7 0 0 1 0 14zM16 16l6 4',
   sofa: 'M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5H4zM2 12v6h20v-6M5 18v2M19 18v2',
   plug: 'M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0zM12 18v3',
+  sort: 'M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3',
+  play: 'M7 4l13 8-13 8z',
+  stop: 'M6 6h12v12H6z',
+  grid: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4',
+  up: 'M6 15l6-6 6 6',
+  down: 'M6 9l6 6 6-6',
+  left: 'M15 5l-7 7 7 7',
+  right: 'M9 5l7 7-7 7',
+  spark: 'M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z',
+  cube: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5',
 }
 export type IconName = keyof typeof PATHS
 

@@ -4,17 +4,12 @@ import { PHONE, PHONE_DISPLAY, absUrl } from '../config'
 import { buildMessage, useEnquiry } from '../state/Enquiry'
 import { usePhoto, usePhotos } from '../hooks/usePhoto'
 import { PALETTE, thumbOf } from '../three/models'
+import { CAT_ICON } from '../data/catIcons'
+import { useIsPhone } from '../hooks/useMedia'
 import Icon from './Icon'
+import MobileShowroom from './MobileShowroom'
 import { PhotoStage, Stage3D } from './Stage'
 
-const CAT_ICON: Record<Category, [string, string]> = {
-  'Chairs': ['M7 3v10h10M7 13v8M17 13v8M5 13h14', 'rock'],
-  'Dining Tables': ['M3 9h18M6 9v11M18 9v11M9 9v4M15 9v4', 'hop'],
-  'Center Tables': ['M3 11h18M5 11v7M19 11v7M7 16h10', 'pulse'],
-  'Cabinets': ['M5 3h14v18H5zM12 3v18M10 12h.01M14 12h.01', 'sway'],
-  'Shoe Racks': ['M5 3v18M19 3v18M5 8h14M5 13h14M5 18h14', 'pulse'],
-  'Step Stools': ['M6 8h12M8 8l-2 12M16 8l2 12M7 14h10', 'hop'],
-}
 const price = (p: Product) => (p.price ? `₹${p.price.toLocaleString('en-IN')}` : 'Ask rate')
 
 function ShelfCard({ p, i, on, onPick }: { p: Product; i: number; on: boolean; onPick: () => void }) {
@@ -81,7 +76,7 @@ function Spotlight({ p, onStep }: { p: Product; onStep: (d: number) => void }) {
 type Sort = 'none' | 'asc' | 'desc'
 const SORT_LABEL: Record<Sort, string> = { none: 'Sort: Featured', asc: 'Price: low to high', desc: 'Price: high to low' }
 
-export default function Showroom() {
+function DesktopShowroom() {
   const [cat, setCat] = useState<Category>('Chairs')
   const [brand, setBrand] = useState('All')
   const [sort, setSort] = useState<Sort>('none')
@@ -148,4 +143,9 @@ export default function Showroom() {
       <div className="deliv"><Icon name="truck" /><div><strong>Free delivery on 10 or more chairs</strong><p>For smaller orders, a delivery charge applies and is confirmed when you order.</p></div></div>
     </div></section>
   )
+}
+
+/** Phones get the one-screen showroom app; larger screens keep the walk-through layout. */
+export default function Showroom() {
+  return useIsPhone() ? <MobileShowroom /> : <DesktopShowroom />
 }
