@@ -1,0 +1,16 @@
+{
+  "name": "Patel Selection",
+  "short_name": "Patel Selection",
+  "description": "Plastic chairs, tables, crockery and home ware. Ambli-Bopal Road, Ahmedabad.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#061a5c",
+  "theme_color": "#0a2a8f",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
