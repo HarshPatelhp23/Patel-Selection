@@ -1,21 +1,14 @@
-/** A small picture that flies from a button to the "My list" tab, so the customer sees where the item went. */
-export function flyToList(from: HTMLElement | null, src: string) {
-  const target = document.querySelector<HTMLElement>('[data-listtab]')
-  if (!from || !target || !('animate' in HTMLElement.prototype)) return
-  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return
+import { calm } from '../hooks/use3d'
+import { colorOf } from '../three/palette'
+import type { Product } from '../data/products'
+
+/** Sends a little 3D copy of the product from the button to the "My list" button. Never blocks adding to the list. */
+export function flyToList(from: Element, p: Product) {
+  if (calm()) return
+  const target = ['.mylist', '.tabs .ticon'].map(s => document.querySelector(s)).find(el => el && (el as HTMLElement).offsetWidth > 0)
+  if (!target) return
   const a = from.getBoundingClientRect(), b = target.getBoundingClientRect()
-  const img = document.createElement('img')
-  img.src = src; img.alt = ''; img.className = 'fly'
-  img.style.left = `${a.left + a.width / 2 - 28}px`
-  img.style.top = `${a.top + a.height / 2 - 28}px`
-  document.body.appendChild(img)
-  const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2)
-  const run = img.animate([
-    { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
-    { transform: `translate(${dx * 0.45}px,${dy * 0.45 - 110}px) scale(.85) rotate(-10deg)`, opacity: 1, offset: 0.45 },
-    { transform: `translate(${dx}px,${dy}px) scale(.18) rotate(14deg)`, opacity: 0.25 },
-  ], { duration: 720, easing: 'cubic-bezier(.45,.05,.55,.95)' })
-  run.onfinish = () => img.remove()
-  run.oncancel = () => img.remove()
-  if ('vibrate' in navigator) navigator.vibrate(10)
+  import('../three/flyer').then(m => m.fly(a, b, { type: p.type, brand: p.brand, name: p.name, color: colorOf(p.brand, p.name) }, () => {
+    target.classList.remove('bump'); void (target as HTMLElement).offsetWidth; target.classList.add('bump')
+  })).catch(() => {})
 }

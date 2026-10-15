@@ -2,11 +2,8 @@ import * as THREE from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import type { ProductType } from '../data/products'
 
-/** Colours available in the 3D viewer: only the logo colours */
-export const PALETTE = ['#e8161c', '#0a2a8f', '#061a5c', '#ffffff', '#dfe6fb']
-
-const hs = (t: string) => [...t].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
-export const colorOf = (brand: string, name: string) => PALETTE[hs(brand + name) % PALETTE.length]
+import { hs, colorOf } from './palette'
+export { PALETTE, colorOf } from './palette'
 
 export interface Model extends THREE.Group { userData: { body: THREE.MeshStandardMaterial[] } }
 

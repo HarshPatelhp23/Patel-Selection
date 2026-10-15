@@ -34,26 +34,12 @@ function photoManifest(): Plugin {
   }
 }
 
-/**
- * SEO: writes robots.txt and sitemap.xml with your real domain, and puts the FAQ into the page's
- * Google "FAQ" data (JSON-LD) so it always matches the FAQ shown on the site.
- */
-function seo(site: string, isBuild: boolean): Plugin {
-  const faq = JSON.parse(readFileSync(join(process.cwd(), 'src/data/faq.json'), 'utf8')) as Array<{ q: string; a: string }>
-  const faqLd = JSON.stringify({
-    '@context': 'https://schema.org', '@type': 'FAQPage',
-    mainEntity: faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-  })
+/** Dev server only: the page template has two markers that the build step fills in (see scripts/prerender.mjs). */
+function devTemplate(): Plugin {
   return {
-    name: 'seo',
-    transformIndexHtml: html => html.split('__FAQ_JSONLD__').join(faqLd).split('__SITE_URL__').join(site),
-    buildStart() { if (isBuild && site.includes('YOUR-DOMAIN')) this.warn('siteUrl in site.config.json is still the placeholder. Put your real website address there before deploying.') },
-    generateBundle() {
-      const today = new Date().toISOString().slice(0, 10)
-      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n` })
-      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source:
-        `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n  <url>\n    <loc>${site}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image><image:loc>${site}/images/shop.jpg</image:loc><image:title>Patel Selection shop front, Ambli-Bopal Road, Ahmedabad</image:title></image:image>\n  </url>\n</urlset>\n` })
-    },
+    name: 'dev-template',
+    apply: 'serve',
+    transformIndexHtml: { order: 'pre', handler: html => html.replace('<!--head-->', '<title>Patel Selection (dev)</title>').replace('<!--app-->', '') },
   }
 }
 
@@ -61,9 +47,10 @@ export default defineConfig(({ mode }) => {
   // Website address: site.config.json (or, optionally, a VITE_SITE_URL environment variable on your host)
   let configured = ''
   try { configured = JSON.parse(readFileSync(join(process.cwd(), 'site.config.json'), 'utf8')).siteUrl || '' } catch { /* file missing */ }
-  const site = (loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL || configured || 'http://localhost:5173').replace(/\/$/, '')
+  const site = (mode === 'production' ? configured : (loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL || 'http://localhost:5173')).replace(/\/$/, '')
   return {
-    plugins: [react(), photoManifest(), seo(site, mode === 'production')],
+    plugins: [react(), photoManifest(), devTemplate()],
+    define: { __SITE_URL__: JSON.stringify(site), __HASH_MODE__: false },
     server: {
       allowedHosts: ['.ngrok-free.app', '.ngrok.app', '.ngrok.io'],
       port: 5173,

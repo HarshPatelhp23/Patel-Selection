@@ -1,50 +1,26 @@
 import { useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
-import { useEnquiry } from '../state/Enquiry'
-import { useIsPhone } from '../hooks/useMedia'
-import { ListPanel } from './Enquiry'
+import ListPanel from './ListPanel'
+import { useT } from '../i18n'
+import { useList } from '../state/list'
+import { useLocation } from 'react-router-dom'
 
-/** Phones: "My list" slides up as a drawer from any screen, so customers never scroll back to find it. Drag the handle down to close. */
+/** Slides in from the right on computers and up from the bottom on phones. Opens from the header, the tab bar or the "Added" message. */
 export default function ListDrawer() {
-  const { drawer, setDrawer } = useEnquiry()
-  const phone = useIsPhone()
-  const sheet = useRef<HTMLDivElement>(null)
-  const close = () => setDrawer(false)
-
-  useEffect(() => {
-    if (!drawer) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') setDrawer(false) }
-    addEventListener('keydown', key)
-    return () => { document.body.style.overflow = prev; removeEventListener('keydown', key) }
-  }, [drawer, setDrawer])
-
-  // drag the handle down to close
-  const drag = useRef<{ y: number; dy: number } | null>(null)
-  const down = (e: React.PointerEvent) => { drag.current = { y: e.clientY, dy: 0 }; e.currentTarget.setPointerCapture(e.pointerId); if (sheet.current) sheet.current.style.transition = 'none' }
-  const move = (e: React.PointerEvent) => {
-    const d = drag.current; if (!d) return
-    d.dy = Math.max(0, e.clientY - d.y)
-    if (sheet.current) sheet.current.style.transform = `translateY(${d.dy}px)`
-  }
-  const up = () => {
-    const d = drag.current; drag.current = null
-    if (!sheet.current) return
-    sheet.current.style.transition = ''; sheet.current.style.transform = ''
-    if (d && d.dy > 90) close()
-  }
-
-  if (!phone) return null
-  return createPortal(
-    <div className={`ldrawer${drawer ? ' open' : ''}`} role="dialog" aria-modal="true" aria-label="My enquiry list" aria-hidden={!drawer}>
-      <div className="ld-back" onClick={close} />
-      <div className="ld-sheet" ref={sheet}>
-        <div className="ld-grip" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}><i /></div>
-        <button className="x" onClick={close} aria-label="Close my list">×</button>
-        <div className="ld-body"><ListPanel /></div>
+  const t = useT()
+  const { open, setOpen, count } = useList()
+  const close = useRef<HTMLButtonElement>(null)
+  const { pathname } = useLocation()
+  useEffect(() => { setOpen(false) }, [pathname, setOpen])
+  useEffect(() => { if (open) close.current?.focus() }, [open])
+  if (!open) return null
+  return (
+    <div className="ldr" role="dialog" aria-modal="true" aria-label={t('myList')}>
+      <div className="ldr-back" onClick={() => setOpen(false)} />
+      <div className="ldr-sheet">
+        <div className="ldr-head"><h2>{t('myList')} <span className="lp-n">{count}</span></h2>
+          <button ref={close} type="button" className="x" onClick={() => setOpen(false)} aria-label={t('close')}>×</button></div>
+        <div className="ldr-body"><ListPanel onNavigate={() => setOpen(false)} /></div>
       </div>
-    </div>,
-    document.body,
+    </div>
   )
 }

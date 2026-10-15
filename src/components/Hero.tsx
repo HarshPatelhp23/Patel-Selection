@@ -1,61 +1,46 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
+import { L } from './Link'
+import { useLang, useT, pick } from '../i18n'
+import { PAGE } from '../data/pages'
+import { photoOf } from '../hooks/photo'
 import { PHONE, PHONE_DISPLAY } from '../config'
-import { CATEGORIES, waLink } from '../data/products'
-import { CAT_ICON } from '../data/catIcons'
-import { jumpToCategory } from '../state/jump'
 
-/** The WebGL hero scene (see three/heroScene.ts). Falls back to the CSS gradient if WebGL is unavailable. */
-function HeroScene() {
-  const ref = useRef<HTMLCanvasElement>(null)
-  useEffect(() => {
-    let dispose = () => {}, dead = false
-    // the 3D engine downloads after the headline and buttons are already on screen
-    import('../three/heroScene').then(m => { if (!dead) dispose = m.mountHero(ref.current!, ref.current!.parentElement!) }).catch(e => console.warn('3D hero unavailable', e))
-    return () => { dead = true; dispose() }
-  }, [])
-  return <canvas id="cv" ref={ref} aria-hidden="true" />
-}
+const COLLAGE = ['nilkamal-paradise', 'cello-unique', 'national-party-round-roma-dining-table', 'national-power-series-4-foot']
 
 export default function Hero() {
-  const words = 'Everything for your home,'.split(' ')
+  const lang = useLang(), t = useT()
+  const cv = useRef<HTMLCanvasElement>(null), host = useRef<HTMLDivElement>(null)
+  const [ready, setReady] = useState(false), [skip, setSkip] = useState(false)
+
+  // The 3D scene is only an extra on large screens. It starts after the page is already usable, so nothing waits for it.
+  useEffect(() => {
+    const nav = navigator as Navigator & { connection?: { saveData?: boolean } }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || nav.connection?.saveData) { setSkip(true); return }
+    let stop = () => {}, dead = false
+    const go = () => import('../three/heroScene').then(m => { if (!dead && cv.current && host.current) { stop = m.mountHero(cv.current, host.current); setReady(true) } }).catch(() => {})
+    const id = (window as any).requestIdleCallback ? (window as any).requestIdleCallback(go, { timeout: 2500 }) : window.setTimeout(go, 900)
+    return () => { dead = true; stop(); (window as any).cancelIdleCallback?.(id); clearTimeout(id) }
+  }, [])
+
   return (
-    <>
-      <div className="hero" id="hero">
-        <HeroScene />
-        <div className="hshade" aria-hidden="true" />
-        <div className="wrap hg">
-          <div>
-            <span className="pill"><i className="dot" /> Plastic Chairs &amp; Home Ware · Bopal, Ahmedabad</span>
-            <h1>
-              {words.map((w, i) => <span className="w" style={{ animationDelay: `${i * 90}ms` }} key={i}>{w}&nbsp;</span>)}
-              <em className="w" style={{ animationDelay: '450ms' }}>under one roof.</em>
-            </h1>
-            <p className="lead">Plastic chairs, tables, crockery, kitchenware and appliances. Ask Arvind Patel for today's best rate.</p>
-            <div className="cta">
-              <a className="btn red" href={`tel:${PHONE}`}><Icon name="phone" /> Call {PHONE_DISPLAY}</a>
-              <a className="btn ghost" href={waLink('Hello Patel Selection, I need a rate.')} target="_blank" rel="noopener noreferrer"><Icon name="chat" /> WhatsApp us</a>
-            </div>
-            <div className="hcats" role="group" aria-label="Jump straight to a product type">
-              <span className="hcats-t">Jump to a product</span>
-              {CATEGORIES.map((c, i) => (
-                <button key={c} style={{ animationDelay: `${700 + i * 70}ms` }} onClick={() => jumpToCategory(c)}>
-                  <svg viewBox="0 0 24 24" className="ci" aria-hidden="true"><path d={CAT_ICON[c][0]} /></svg><span>{c}</span>
-                </button>
-              ))}
-            </div>
-            <p className="hint">Move your mouse or finger near the furniture. Tap anywhere to make it fly.</p>
+    <section className={`hero${ready ? ' is3d' : ''}${skip ? ' skip3d' : ''}`} ref={host}>
+      <canvas ref={cv} className={`hero-cv${ready ? ' on' : ''}`} aria-hidden="true" />
+      <div className="wrap hero-in">
+        <div className="hero-txt">
+          <span className="pill"><i /> {pick(PAGE.home.pill, lang)}</span>
+          <h1>{pick(PAGE.home.h1a, lang)} <em>{pick(PAGE.home.h1b, lang)}</em></h1>
+          <p className="lead">{pick(PAGE.home.lead, lang)}</p>
+          <div className="hero-cta">
+            <L to="/products" className="btn red big"><Icon name="bag" /> {t('products')}</L>
+            <a className="btn ghost big" href={`tel:${PHONE}`}><Icon name="phone" /> {PHONE_DISPLAY}</a>
           </div>
+          <ul className="hero-badges"><li><Icon name="truck" /> {t('freeDeliveryBadge')}</li><li><Icon name="tag" /> {t('askRate')}</li></ul>
         </div>
-        <svg className="badge" viewBox="0 0 120 120" aria-label="Free delivery on 10 or more chairs">
-          <defs><path id="bp" d="M60,60 m-47,0 a47,47 0 1,1 94,0 a47,47 0 1,1 -94,0" /></defs>
-          <circle cx="60" cy="60" r="59" fill="#e8161c" /><circle cx="60" cy="60" r="31" fill="#fff" />
-          <g className="spin"><text fontSize="11" fontWeight="800" fill="#fff"><textPath href="#bp" textLength="288" lengthAdjust="spacing">FREE DELIVERY ON 10+ CHAIRS ✦</textPath></text></g>
-          <text x="60" y="67" textAnchor="middle" fontSize="22" fontWeight="800" fill="#0a2a8f" fontFamily="Arial Black,Arial,sans-serif">10+</text>
-        </svg>
-        <div className="cue" aria-hidden="true"><i /><span>Scroll</span></div>
+        <div className="collage" aria-hidden="true">
+          {COLLAGE.map((s, i) => { const p = photoOf(s); return p ? <img key={s} src={p} alt="" width={450} height={450} loading={i < 2 ? 'eager' : 'lazy'} {...(i === 0 ? { fetchpriority: 'high' } : {})} decoding="async" /> : null })}
+        </div>
       </div>
-      <div className="band" />
-    </>
+    </section>
   )
 }

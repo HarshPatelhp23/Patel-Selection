@@ -1,4 +1,4 @@
 {
-  "_help": "Put your real website address here (no slash at the end). Example: https://www.patelselection.in. It is used for the canonical link, social previews, sitemap.xml and robots.txt.",
+  "_help": "Put your real website address here (no slash at the end), e.g. https://www.patelselection.in. It is used for canonical links, hreflang, social previews, sitemap.xml and robots.txt. Change it BEFORE you run `npm run build` for the live site.",
   "siteUrl": "https://patel-selection.pages.dev"
 }

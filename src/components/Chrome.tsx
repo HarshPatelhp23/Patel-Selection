@@ -1,107 +1,150 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import Icon from './Icon'
 import Logo from './Logo'
-import { PHONE, PHONE_DISPLAY } from '../config'
-import { waLink } from '../data/products'
-import { useEnquiry } from '../state/Enquiry'
+import { L, useBasePath } from './Link'
+import { LANGS, LANG_META, langPath, pick, useLang, useT } from '../i18n'
+import { useList } from '../state/list'
+import { ADDRESS, OWNER, PHONE, PHONE_DISPLAY } from '../config'
+import { CAT } from '../data/categories'
+import { CATEGORIES, categoryPath } from '../data/products'
+import { DEPTS } from '../data/departments'
 
-export function Header() {
+function LangSwitch() {
+  const lang = useLang(), base = useBasePath(), t = useT()
   return (
-    <header><div className="wrap">
-      <a className="lg" href="#top" aria-label="Patel Selection home"><Logo variant="mini" /></a>
-      <nav><a href="#best">Showroom</a><a href="#range">Enquiry list</a><a href="#why">About</a><a href="#custom">Send a photo</a><a href="#visit">Visit us</a></nav>
-      <a className="hcall" href={`tel:${PHONE}`}><Icon name="phone" /> Call now</a>
-    </div></header>
-  )
-}
-
-export function Footer() {
-  return (
-    <>
-      <div className="band" />
-      <footer><div className="wrap">
-        <div className="pl"><Logo /></div>
-        <p>Plastic wares, crockery, thermo wares, kitchen wares, non-stick cook wares, moulded furniture and home appliances.<br />Ambli-Bopal Road, Ahmedabad-380058</p>
-        <a href={`tel:${PHONE}`}>Arvind Patel<br />{PHONE_DISPLAY}</a>
-      </div></footer>
-    </>
-  )
-}
-
-/** Which part of the page the visitor is looking at, for the glowing marker in the phone dock */
-type Where = 'home' | 'best' | 'list' | 'visit' | null
-const SECTION_OF: Array<[string, Where]> = [['hero', 'home'], ['best', 'best'], ['range', 'list'], ['visit', 'visit']]
-const SLOT: Record<Exclude<Where, null>, number> = { home: 0, best: 1, list: 3, visit: 4 }
-
-/** Floating glass dock for phones: a red marker slides to the section you are in, the call button floats above it. */
-export function TabBar() {
-  const { count, bump, drawer, setDrawer } = useEnquiry()
-  const [where, setWhere] = useState<Where>('home')
-  useEffect(() => {
-    let raf = 0
-    const look = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const y = innerHeight * 0.45
-        let found: Where = null
-        for (const [id, w] of SECTION_OF) {
-          const r = document.getElementById(id)?.getBoundingClientRect()
-          if (r && r.top <= y && r.bottom > y) found = w
-        }
-        setWhere(found)
-      })
-    }
-    addEventListener('scroll', look, { passive: true }); addEventListener('resize', look); look()
-    return () => { cancelAnimationFrame(raf); removeEventListener('scroll', look); removeEventListener('resize', look) }
-  }, [])
-  const on: Where = drawer ? 'list' : where
-  const slot = on ? SLOT[on] : -1
-  return (
-    <nav className="tabs" aria-label="App navigation" style={{ '--i': Math.max(0, slot) } as CSSProperties} data-none={slot < 0 ? '' : undefined}>
-      <i className="tblob" aria-hidden="true" />
-      <a href="#top" className={on === 'home' ? 'on' : ''}><Icon name="home" /><span>Home</span></a>
-      <a href="#best" className={on === 'best' ? 'on' : ''}><Icon name="bag" /><span>Showroom</span></a>
-      <div className="fabslot"><a className="fab" href={`tel:${PHONE}`} aria-label="Call Patel Selection"><Icon name="phone" /></a><span>Call</span></div>
-      <a href="#range" className={on === 'list' ? 'on' : ''} onClick={e => { e.preventDefault(); setDrawer(true) }} aria-haspopup="dialog">
-        <span className="ticon" data-listtab><Icon name="list" />{count > 0 && <b className="tbadge" key={bump}>{count}</b>}</span><span>My list</span>
-      </a>
-      <a href="#visit" className={on === 'visit' ? 'on' : ''}><Icon name="pin" /><span>Visit</span></a>
-    </nav>
-  )
-}
-
-/** Slides up after 14 seconds with Call and WhatsApp */
-export function Nudge() {
-  const [open, setOpen] = useState(false)
-  useEffect(() => { const t = setTimeout(() => setOpen(true), 14000); return () => clearTimeout(t) }, [])
-  return (
-    <div className={`sheet${open ? ' open' : ''}`} role="dialog" aria-label="Get best rate">
-      <button className="x" onClick={() => setOpen(false)} aria-label="Close">×</button>
-      <h3>Get today's best rate</h3>
-      <p>Tell Arvind Patel what you need. Quick reply, no obligation.</p>
-      <div className="cta">
-        <a className="btn red" href={`tel:${PHONE}`}><Icon name="phone" /> Call now</a>
-        <a className="btn wa" href={waLink('Hello Patel Selection, please share best rates.')} target="_blank" rel="noopener noreferrer"><Icon name="chat" /> WhatsApp</a>
-      </div>
+    <div className="lang" role="group" aria-label={t('language')}>
+      {LANGS.map(l => (
+        <a key={l} href={(__HASH_MODE__ ? '#' : '') + langPath(l, base)} hrefLang={LANG_META[l].hreflang} lang={LANG_META[l].html} className={l === lang ? 'on' : ''} aria-current={l === lang ? 'true' : undefined}
+          title={LANG_META[l].name}>{LANG_META[l].short}</a>
+      ))}
     </div>
   )
 }
 
-/** Red progress line under the header while scrolling */
-export function ScrollProgress() {
-  const [p, setP] = useState(0)
+export function Header() {
+  const t = useT(), lang = useLang()
+  const { count, setOpen } = useList()
+  const [menu, setMenu] = useState(false)
+  const { pathname } = useLocation()
+  useEffect(() => setMenu(false), [pathname])
   useEffect(() => {
-    let raf = 0
-    const f = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const h = document.documentElement.scrollHeight - innerHeight; setP(h > 0 ? scrollY / h : 0) }) }
-    addEventListener('scroll', f, { passive: true }); f()
-    return () => { removeEventListener('scroll', f); cancelAnimationFrame(raf) }
-  }, [])
-  return <div className="prog" style={{ transform: `scaleX(${p})` }} />
+    document.body.classList.toggle('noscroll', menu)
+    return () => document.body.classList.remove('noscroll')
+  }, [menu])
+  return (
+    <header className="hd">
+      <a className="skip" href="#main" onClick={e => { e.preventDefault(); document.getElementById('main')?.focus() }}>{t('skip')}</a>
+      <div className="wrap hdr">
+        <L className="lg" to="/" aria-label="Patel Selection"><Logo variant="mini" /></L>
+        <nav className="dnav" aria-label="Main">
+          <div className="dd">
+            <L to="/products">{t('products')} <Icon name="down" /></L>
+            <div className="ddm">
+              <L to="/dining-set-builder" className="hot"><Icon name="cube" /> {t('builderLink')}</L>
+              {CATEGORIES.map(c => <L key={c} to={categoryPath(c)}>{pick(CAT[c].name, lang)}</L>)}
+              <L to="/departments" className="all">{t('departments')} →</L>
+            </div>
+          </div>
+          <L to="/departments">{t('departments')}</L>
+          <L to="/about">{t('about')}</L>
+          <L to="/send-a-photo">{t('sendPhoto')}</L>
+          <L to="/visit">{t('visit')}</L>
+        </nav>
+        <LangSwitch />
+        <button type="button" className="mylist" onClick={() => setOpen(true)} aria-haspopup="dialog">
+          <Icon name="list" /><span className="mylist-t">{t('myList')}</span>{count > 0 && <b>{count}</b>}
+        </button>
+        <a className="hcall" href={`tel:${PHONE}`}><Icon name="phone" /><span>{t('callNow')}</span></a>
+        <button type="button" className="burger" onClick={() => setMenu(m => !m)} aria-expanded={menu} aria-controls="mnav" aria-label={t('menu')}><Icon name={menu ? 'close' : 'menu'} /></button>
+      </div>
+      {menu && (
+        <nav id="mnav" className="mnav" aria-label={t('menu')}>
+          <L to="/products" className="big">{t('products')}</L>
+          <div className="msub">{CATEGORIES.map(c => <L key={c} to={categoryPath(c)}>{pick(CAT[c].name, lang)}</L>)}</div>
+          <L to="/dining-set-builder" className="big">{t('builderLink')}</L>
+          <L to="/departments" className="big">{t('departments')}</L>
+          <L to="/about" className="big">{t('about')}</L>
+          <L to="/send-a-photo" className="big">{t('sendPhoto')}</L>
+          <L to="/visit" className="big">{t('visit')}</L>
+          <L to="/areas" className="big">{t('areas')}</L>
+          <div className="mlang"><LangSwitch /></div>
+        </nav>
+      )}
+    </header>
+  )
 }
 
-/** Floating "My list" button that pops whenever something is added */
-export function ListPill() {
-  const { count, bump } = useEnquiry()
-  if (!count) return null
-  return <a className="lpill" key={bump} href="#range"><Icon name="list" /> My list <b>{count}</b></a>
+export function Footer() {
+  const t = useT(), lang = useLang()
+  return (
+    <>
+      <div className="band" />
+      <footer className="ft"><div className="wrap">
+        <div className="ft-brand">
+          <div className="pl"><Logo /></div>
+          <p>{t('footerAbout')}</p>
+          <address>
+            Patel Selection<br />{ADDRESS.street},<br />{ADDRESS.locality}-{ADDRESS.postal}, {ADDRESS.region}
+          </address>
+          <a className="ft-call" href={`tel:${PHONE}`}>{OWNER}: {PHONE_DISPLAY}</a>
+        </div>
+        <nav aria-label={t('products')}>
+          <h2>{t('products')}</h2>
+          <ul>{CATEGORIES.map(c => <li key={c}><L to={categoryPath(c)}>{pick(CAT[c].name, lang)}</L></li>)}</ul>
+        </nav>
+        <nav aria-label={t('departments')}>
+          <h2>{t('departments')}</h2>
+          <ul>{DEPTS.map(d => <li key={d.slug}><L to={`/departments/${d.slug}`}>{pick(d.name, lang)}</L></li>)}</ul>
+        </nav>
+        <nav aria-label={t('quickLinks')}>
+          <h2>{t('quickLinks')}</h2>
+          <ul>
+            <li><L to="/dining-set-builder">{t('builderLink')}</L></li>
+            <li><L to="/about">{t('about')}</L></li>
+            <li><L to="/send-a-photo">{t('sendPhoto')}</L></li>
+            <li><L to="/visit">{t('visit')}</L></li>
+            <li><L to="/areas">{t('areas')}</L></li>
+            <li><L to="/my-list">{t('myList')}</L></li>
+          </ul>
+          <div className="lang ft-lang"><LangSwitch /></div>
+        </nav>
+      </div>
+        <div className="wrap ft-bot">© Patel Selection, Ambli-Bopal Road, Ahmedabad</div>
+      </footer>
+    </>
+  )
+}
+
+/** Floating glass dock for phones: Home, Products, Call, My list, Visit. */
+export function TabBar() {
+  const t = useT()
+  const { count, setOpen, open } = useList()
+  const base = useBasePath()
+  const on = (p: string) => (p === '/' ? base === '/' : base.startsWith(p))
+  return (
+    <nav className="tabs" aria-label="App">
+      <L to="/" className={on('/') ? 'on' : ''}><Icon name="home" /><span>{t('home')}</span></L>
+      <L to="/products" className={on('/products') ? 'on' : ''}><Icon name="bag" /><span>{t('products')}</span></L>
+      <div className="fabslot"><a className="fab" href={`tel:${PHONE}`} aria-label={t('callNow')}><Icon name="phone" /></a><span>{t('call')}</span></div>
+      <button type="button" className={open ? 'on' : ''} onClick={() => setOpen(true)} aria-haspopup="dialog">
+        <span className="ticon"><Icon name="list" />{count > 0 && <b className="tbadge">{count}</b>}</span><span>{t('myList')}</span>
+      </button>
+      <L to="/visit" className={on('/visit') ? 'on' : ''}><Icon name="pin" /><span>{t('visit')}</span></L>
+    </nav>
+  )
+}
+
+/** "Added" message with a View list button, so the customer sees what happened and what to do next. */
+export function Toast() {
+  const t = useT()
+  const { toast, setOpen, count } = useList()
+  if (!toast) return null
+  return (
+    <div className="toast" role="status" key={toast.id}>
+      <Icon name="check" />
+      <span><b>{toast.label}</b> {t('addedToast').toLowerCase()}</span>
+      <button type="button" onClick={() => setOpen(true)}>{t('viewList')} ({count})</button>
+    </div>
+  )
 }

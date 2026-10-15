@@ -29,6 +29,10 @@ const PATHS = {
   left: 'M15 5l-7 7 7 7',
   right: 'M9 5l7 7-7 7',
   spark: 'M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z',
+  menu: 'M4 7h16M4 12h16M4 17h16',
+  globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18',
+  trash: 'M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13',
+  share: 'M12 3v12M8 7l4-4 4 4M5 13v7h14v-7',
   cube: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5',
 }
 export type IconName = keyof typeof PATHS
