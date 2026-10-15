@@ -57,5 +57,6 @@ export default defineConfig(({ mode }) => {
       open: true,
     },
     build: { outDir: 'dist', sourcemap: false },
+    ssr: 'src/entry-server.tsx'
   }
 })
