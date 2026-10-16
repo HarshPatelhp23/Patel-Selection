@@ -8,6 +8,7 @@ import Home from './pages/Home'
 import { CategoryPage, ProductPage, Products } from './pages/Catalog'
 import { About, Areas, Department, Departments, MyList, SendPhoto, Visit } from './pages/Info'
 import Builder from './pages/Builder'
+import Fx from './components/Fx'
 import NotFound from './pages/NotFound'
 import { applySeo, seoFor } from './seo'
 
@@ -31,6 +32,7 @@ function Shell({ lang }: { lang: Lang }) {
       <TabBar />
       <Toast />
       <ListDrawer />
+      <Fx />
     </LangCtx.Provider>
   )
 }

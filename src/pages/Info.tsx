@@ -5,6 +5,8 @@ import { L } from '../components/Link'
 import ListPanel from '../components/ListPanel'
 import NotFound from './NotFound'
 import { Crumbs, Cta, PageHead, Searches, bullets } from '../components/Bits'
+import LiveIcon, { DEPT_KIND } from '../components/LiveIcon'
+import { Founder } from '../components/Sections'
 import { pick, tUI, useLang, useT } from '../i18n'
 import { PAGE, AREAS } from '../data/pages'
 import { CAT } from '../data/categories'
@@ -20,7 +22,7 @@ export function Departments() {
       <PageHead h1={pick(P.h1, lang)} lead={pick(P.lead, lang)} crumbs={[{ to: '/', label: t('home') }, { label: t('departments') }]} />
       <section className="sec"><div className="wrap"><div className="dgrid big">
         {DEPTS.map(d => (
-          <L key={d.slug} to={`/departments/${d.slug}`} className="dc"><span className="dc-i"><Icon name={d.icon} /></span><span><b>{pick(d.name, lang)}</b><small>{bullets(d.items, lang).slice(0, 3).join(', ')}</small></span><Icon name="right" /></L>
+          <L key={d.slug} to={`/departments/${d.slug}`} className="dc"><span className="dc-i"><LiveIcon kind={DEPT_KIND[d.slug]} size={40} /></span><span><b>{pick(d.name, lang)}</b><small>{bullets(d.items, lang).slice(0, 3).join(', ')}</small></span><Icon name="right" /></L>
         ))}
       </div></div></section>
       <Cta />
@@ -40,7 +42,7 @@ export function Department() {
       <PageHead h1={`${name}, ${pick(['Bopal, Ahmedabad', 'बोपल, अहमदाबाद', 'બોપલ, અમદાવાદ'], lang)}`} lead={pick(d.intro, lang)}
         crumbs={[{ to: '/', label: t('home') }, { to: '/departments', label: t('departments') }, { label: name }]} />
       <section className="sec"><div className="wrap two">
-        <div><h2>{pick(PAGE.departments.typicalItems, lang)}</h2><ul className="tick">{bullets(d.items, lang).map(x => <li key={x}>{x}</li>)}</ul><p className="note">{pick(PAGE.departments.stockNote, lang)}</p></div>
+        <div><span className="dc-i big"><LiveIcon kind={DEPT_KIND[d.slug]} size={64} /></span><h2>{pick(PAGE.departments.typicalItems, lang)}</h2><ul className="tick">{bullets(d.items, lang).map(x => <li key={x}>{x}</li>)}</ul><p className="note">{pick(PAGE.departments.stockNote, lang)}</p></div>
         <div className="box">
           <h2>{pick(PAGE.departments.askAbout, lang).replace('{name}', name)}</h2>
           <div className="stack">
@@ -75,14 +77,7 @@ export function About() {
   return (
     <>
       <PageHead h1={pick(P.h1, lang)} lead={pick(P.lead, lang)} crumbs={[{ to: '/', label: t('home') }, { label: t('about') }]} />
-      <section className="sec"><div className="wrap about-s">
-        <img src={`${IMG_BASE}founder.jpg`} alt={`${OWNER}, owner of Patel Selection, Ahmedabad`} width={600} height={750} loading="lazy" decoding="async" />
-        <div>
-          <h2>{pick(P.headline, lang)}</h2>
-          <p>{pick(P.story, lang)}</p>
-          <p><b>{OWNER}</b> · <a href={`tel:${PHONE}`}>{PHONE_DISPLAY}</a></p>
-        </div>
-      </div></section>
+      <section className="sec"><div className="wrap"><Founder /></div></section>
       <section className="sec tint"><div className="wrap">
         <div className="why">{P.points.map(([a, b], i) => <div key={i} className="why-c"><h3>{pick(a, lang)}</h3><p>{pick(b, lang)}</p></div>)}</div>
       </div></section>

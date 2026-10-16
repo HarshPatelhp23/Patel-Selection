@@ -35,7 +35,7 @@ function sparkleTexture() {
  * glossy plastic with studio reflections, real-time soft shadows, floating sparkles,
  * and "see it in your room" augmented reality on phones that support it.
  */
-export function mountViewer(cv: HTMLCanvasElement, host: HTMLElement, spec: ViewerSpec): Viewer {
+export function mountViewer(cv: HTMLCanvasElement, host: HTMLElement, spec: ViewerSpec, opts: { bare?: boolean } = {}): Viewer {
   const R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'high-performance' })
   R.setPixelRatio(Math.min(devicePixelRatio || 1, 2))
   R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap
@@ -63,6 +63,8 @@ export function mountViewer(cv: HTMLCanvasElement, host: HTMLElement, spec: View
   rim.rotation.x = Math.PI / 2; rim.position.y = 0.0; stage.add(rim)
   const rim2 = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.02, 10, 120), new THREE.MeshBasicMaterial({ color: new THREE.Color('#3a63e6').multiplyScalar(2.2), toneMapped: false }))
   rim2.rotation.x = Math.PI / 2; rim2.position.y = -0.05; stage.add(rim2)
+
+  if (opts.bare) { plat.visible = false; rim.visible = false; rim2.visible = false }
 
   // product
   const model = buildModel(spec.type, spec.brand, spec.name, spec.color)

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Icon from './Icon'
 import Logo from './Logo'
+import LiveIcon, { CAT_KIND } from './LiveIcon'
 import { L, useBasePath } from './Link'
 import { LANGS, LANG_META, langPath, pick, useLang, useT } from '../i18n'
 import { useList } from '../state/list'
@@ -42,7 +43,7 @@ export function Header() {
             <L to="/products">{t('products')} <Icon name="down" /></L>
             <div className="ddm">
               <L to="/dining-set-builder" className="hot"><Icon name="cube" /> {t('builderLink')}</L>
-              {CATEGORIES.map(c => <L key={c} to={categoryPath(c)}>{pick(CAT[c].name, lang)}</L>)}
+              {CATEGORIES.map(c => <L key={c} to={categoryPath(c)}><LiveIcon kind={CAT_KIND[c]} size={26} />{pick(CAT[c].name, lang)}</L>)}
               <L to="/departments" className="all">{t('departments')} →</L>
             </div>
           </div>
@@ -116,21 +117,23 @@ export function Footer() {
   )
 }
 
-/** Floating glass dock for phones: Home, Products, Call, My list, Visit. */
+/** Floating glass dock for phones: Home, Products, Call, My list, Visit. A red blob slides to the active tab. */
 export function TabBar() {
   const t = useT()
   const { count, setOpen, open } = useList()
   const base = useBasePath()
-  const on = (p: string) => (p === '/' ? base === '/' : base.startsWith(p))
+  const idx = base === '/' ? 0 : base.startsWith('/products') || base.startsWith('/dining') ? 1 : base.startsWith('/visit') ? 4 : base.startsWith('/my-list') ? 3 : -1
+  const cur = open ? 3 : idx
   return (
-    <nav className="tabs" aria-label="App">
-      <L to="/" className={on('/') ? 'on' : ''}><Icon name="home" /><span>{t('home')}</span></L>
-      <L to="/products" className={on('/products') ? 'on' : ''}><Icon name="bag" /><span>{t('products')}</span></L>
+    <nav className="tabs" aria-label="App" style={{ ['--i' as string]: cur < 0 ? 0 : cur }} data-none={cur < 0 ? '' : undefined}>
+      <span className="tblob" aria-hidden="true" />
+      <L to="/" className={cur === 0 ? 'on' : ''}><Icon name="home" /><span>{t('home')}</span></L>
+      <L to="/products" className={cur === 1 ? 'on' : ''}><Icon name="bag" /><span>{t('products')}</span></L>
       <div className="fabslot"><a className="fab" href={`tel:${PHONE}`} aria-label={t('callNow')}><Icon name="phone" /></a><span>{t('call')}</span></div>
-      <button type="button" className={open ? 'on' : ''} onClick={() => setOpen(true)} aria-haspopup="dialog">
+      <button type="button" className={cur === 3 ? 'on' : ''} onClick={() => setOpen(true)} aria-haspopup="dialog">
         <span className="ticon"><Icon name="list" />{count > 0 && <b className="tbadge">{count}</b>}</span><span>{t('myList')}</span>
       </button>
-      <L to="/visit" className={on('/visit') ? 'on' : ''}><Icon name="pin" /><span>{t('visit')}</span></L>
+      <L to="/visit" className={cur === 4 ? 'on' : ''}><Icon name="pin" /><span>{t('visit')}</span></L>
     </nav>
   )
 }

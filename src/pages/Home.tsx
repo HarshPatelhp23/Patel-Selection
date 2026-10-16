@@ -1,5 +1,7 @@
 import Hero from '../components/Hero'
 import Showroom3D from '../components/Showroom3D'
+import LiveIcon, { DEPT_KIND } from '../components/LiveIcon'
+import { DeliveryStrip, Founder, Marquee, Stats } from '../components/Sections'
 import ProductCard from '../components/ProductCard'
 import Icon from '../components/Icon'
 import { L } from '../components/Link'
@@ -20,6 +22,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <Marquee />
 
       <Showroom3D />
 
@@ -42,7 +45,7 @@ export default function Home() {
         <div className="sec-h"><div><h2>{t('departments')}</h2><p className="sub">{pick(P.deptsIntro, lang)}</p></div></div>
         <div className="dgrid">
           {DEPTS.map(d => (
-            <L key={d.slug} to={`/departments/${d.slug}`} className="dc"><span className="dc-i"><Icon name={d.icon} /></span><b>{pick(d.name, lang)}</b><Icon name="right" /></L>
+            <L key={d.slug} to={`/departments/${d.slug}`} className="dc"><span className="dc-i"><LiveIcon kind={DEPT_KIND[d.slug]} size={40} /></span><b>{pick(d.name, lang)}</b><Icon name="right" /></L>
           ))}
         </div>
       </div></section>
@@ -58,14 +61,10 @@ export default function Home() {
         </div>
       </div></section>
 
-      <section className="sec"><div className="wrap about-s">
-        <img src={`${IMG_BASE}shop.jpg`} alt="Patel Selection shop, Ambli-Bopal Road, Ahmedabad" width={800} height={600} loading="lazy" decoding="async" />
-        <div>
-          <h2>{pick(PAGE.about.h1, lang)}</h2>
-          <p>{pick(PAGE.about.story, lang)}</p>
-          <div className="row"><L to="/about" className="btn ghost">{t('about')} →</L><L to="/visit" className="btn ghost">{t('visit')} →</L></div>
-        </div>
-      </div></section>
+      <Stats />
+      <DeliveryStrip />
+
+      <section className="sec"><div className="wrap"><Founder /></div></section>
 
       <section className="sec tint"><div className="wrap narrow">
         <h2>{t('trustedBrands')}</h2>

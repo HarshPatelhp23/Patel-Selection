@@ -4,6 +4,7 @@ import { L } from './Link'
 import { pick, useLang, useT, type T3 } from '../i18n'
 import { waLink, productsIn, categoryPath, type Category } from '../data/products'
 import { CAT } from '../data/categories'
+import LiveIcon, { CAT_KIND } from './LiveIcon'
 import { photoOf } from '../hooks/photo'
 import { PHONE, PHONE_DISPLAY } from '../config'
 import { tUI } from '../i18n'
@@ -71,7 +72,7 @@ export function CatCard({ c }: { c: Category }) {
   const photo = photoOf(list[0].slug)
     return (
     <L to={categoryPath(c)} className="cc">
-      <span className="cc-img">{photo && <img src={photo} alt="" width={450} height={450} loading="lazy" decoding="async" />}</span>
+      <span className="cc-img"><span className="cc-ic"><LiveIcon kind={CAT_KIND[c]} size={34} /></span>{photo && <img src={photo} alt="" width={450} height={450} loading="lazy" decoding="async" />}</span>
       <span className="cc-t"><b>{pick(CAT[c].name, lang)}</b><small>{t('modelsCount', { n: list.length })}</small></span>
     </L>
   )

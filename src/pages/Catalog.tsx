@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import ProductCard from '../components/ProductCard'
 import AddButton from '../components/AddButton'
 import ProductViewer from '../components/ProductViewer'
-import Showroom3D from '../components/Showroom3D'
+import LiveShowroom from '../components/LiveShowroom'
+import LiveIcon from '../components/LiveIcon'
 import Icon from '../components/Icon'
 import { L } from '../components/Link'
 import { CatCard, Crumbs, Cta, Faq, PageHead, Searches, bullets } from '../components/Bits'
@@ -35,7 +36,7 @@ export function Products() {
         </div></section>
       ) : (
         <>
-          <Showroom3D />
+          <LiveShowroom />
           <section className="sec"><div className="wrap"><div className="cgrid big">{CATEGORIES.map(c => <CatCard key={c} c={c} />)}</div></div></section>
           <section className="sec slim"><div className="wrap narrow"><h2 className="h-sm">{pick(PAGE.products.brandsTitle, lang)}</h2><ul className="brands">{BRANDS.map(b => <li key={b}>{b}</li>)}</ul></div></section>
         </>
@@ -65,6 +66,8 @@ function CategoryView({ c }: { c: (typeof CATEGORIES)[number] }) {
   return (
     <>
       <PageHead h1={pick(K.h1, lang)} lead={pick(K.intro, lang)} crumbs={[{ to: '/', label: t('home') }, { to: '/products', label: t('products') }, { label: pick(K.name, lang) }]} />
+      <LiveShowroom category={c} />
+
       <section className="sec"><div className="wrap">
         <div className="toolbar">
           <div className="chips" role="group" aria-label={t('brand')}>
@@ -131,7 +134,7 @@ function ProductView({ p }: { p: NonNullable<ReturnType<typeof productBySlug>> }
             <a className="btn wa" href={waLink(tUI(lang, 'waRateOne', { name: `${p.brand} ${p.name}` }) + '\n' + absUrl(langPath(lang, productPath(p))))} target="_blank" rel="noopener"><Icon name="chat" /> {t('askRate')}</a>
             <a className="btn ghost line" href={`tel:${PHONE}`}><Icon name="phone" /> {PHONE_DISPLAY}</a>
           </div>
-          {p.category === 'Chairs' && <p className="deliv"><Icon name="truck" /> {t('freeDeliveryChairs')}. {t('freeDeliveryDetail')}</p>}
+          {p.category === 'Chairs' && <p className="deliv"><LiveIcon kind="truck" size={40} /> {t('freeDeliveryChairs')}. {t('freeDeliveryDetail')}</p>}
         </div>
       </div></section>
 

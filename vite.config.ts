@@ -56,17 +56,6 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       open: true,
     },
-    build: {
-      ssr: 'src/entry-server.tsx',
-      outDir: 'dist-ssr',
-      emptyOutDir: true,
-      rollupOptions: {
-        output: {
-          entryFileNames: 'entry-server.js',
-          chunkFileNames: '[name].js',
-          assetFileNames: '[name][extname]',
-        },
-      },
-    },
+    build: { outDir: 'dist', sourcemap: false },
   }
 })

@@ -192,6 +192,25 @@ const UI = {
   bChairsAsk: ['chair rate on request', 'कुर्सी का रेट पूछें', 'ખુરશીનો ભાવ પૂછો'],
   bAdded: ['Set added to your list', 'सेट आपकी लिस्ट में जुड़ गया', 'સેટ તમારી લિસ્ટમાં ઉમેરાઈ ગયો'],
   bColourNote: ['Colours here are a preview. Tell us the colour you want when you send the list.', 'यहां के रंग सिर्फ प्रीव्यू हैं। लिस्ट भेजते समय अपना पसंदीदा रंग बताएं।', 'અહીંના રંગ ફક્ત પ્રીવ્યૂ છે. લિસ્ટ મોકલતી વખતે તમારો પસંદગીનો રંગ જણાવો.'],
+
+  // live showroom + hero + stats
+  liveBadge: ['LIVE SHOWROOM', 'लाइव शोरूम', 'લાઇવ શોરૂમ'],
+  walkTitle: ['Walk through our showroom', 'हमारे शोरूम में घूमें', 'અમારા શોરૂમમાં ફરો'],
+  walkSub: ['Pick a product, then a company. Tap any item on the shelf to see it on the stage.', 'पहले प्रोडक्ट, फिर कंपनी चुनें। शेल्फ पर किसी भी आइटम को दबाकर उसे स्टेज पर देखें।', 'પહેલા પ્રોડક્ટ, પછી કંપની પસંદ કરો. શેલ્ફ પરની કોઈ પણ વસ્તુ દબાવી તેને સ્ટેજ પર જુઓ.'],
+  step1: ['Choose a product', 'प्रोडक्ट चुनें', 'પ્રોડક્ટ પસંદ કરો'],
+  step2: ['Choose a company', 'कंपनी चुनें', 'કંપની પસંદ કરો'],
+  liveTour: ['Live tour', 'लाइव टूर', 'લાઇવ ટૂર'],
+  stopTour: ['Stop tour', 'टूर रोकें', 'ટૂર રોકો'],
+  tiltHint: ['Move your finger or mouse over the photo to tilt it in 3D.', 'फोटो पर उंगली या माउस घुमाकर उसे 3D में झुकाएं।', 'ફોટા પર આંગળી કે માઉસ ફેરવી તેને 3D માં નમાવો.'],
+  onShelf: ['{n} products on the shelf', '{n} प्रोडक्ट शेल्फ पर', '{n} પ્રોડક્ટ શેલ્ફ પર'],
+  fullDetails: ['Full details', 'पूरी जानकारी', 'પૂરી માહિતી'],
+  jumpTo: ['Jump to a product', 'सीधे प्रोडक्ट पर जाएं', 'સીધા પ્રોડક્ટ પર જાઓ'],
+  heroHint: ['Move your mouse or finger near the furniture. Tap anywhere to make it fly.', 'माउस या उंगली को फर्नीचर के पास ले जाएं। कहीं भी टैप करें और उन्हें उड़ता देखें।', 'માઉસ કે આંગળી ફર્નિચર પાસે લઈ જાઓ. ક્યાંય પણ ટૅપ કરો અને તેમને ઊડતા જુઓ.'],
+  scrollCue: ['Scroll', 'स्क्रॉल', 'સ્ક્રોલ'],
+  badgeText: ['FREE DELIVERY ON 10+ CHAIRS ✦', '10+ कुर्सियों पर फ्री डिलीवरी ✦', '10+ ખુરશી પર ફ્રી ડિલિવરી ✦'],
+  modelsOnline: ['models to browse online', 'मॉडल ऑनलाइन देखें', 'મોડલ ઓનલાઇન જુઓ'],
+  deliveryStrip: ['Free delivery on 10 or more chairs, right to your door', '10 या ज्यादा कुर्सियों पर फ्री डिलीवरी, सीधे आपके दरवाज़े तक', '10 કે વધુ ખુરશી પર ફ્રી ડિલિવરી, સીધી તમારા દરવાજા સુધી'],
+  founderLabel: ['Arvind Patel, owner', 'अरविंद पटेल, मालिक', 'અરવિંદ પટેલ, માલિક'],
 } as const satisfies Record<string, T3>
 
 export type UIKey = keyof typeof UI

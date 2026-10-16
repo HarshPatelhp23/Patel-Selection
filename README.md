@@ -1,113 +1,63 @@
-# Patel Selection Website (React + Vite + TypeScript)
+# Patel Selection website
 
-Updated version of your existing project. Same setup, same commands:
+Multi-page, three-language (English, Hindi, Gujarati) website for Patel Selection, Ambli-Bopal Road, Ahmedabad.
 
-```bash
+## What changed and why
+
+| Request | What was done |
+|---|---|
+| Separate pages for every navbar item | Real pages: `/products`, `/departments`, `/about`, `/send-a-photo`, `/visit`, `/my-list`, plus `/areas` |
+| Category pages and product pages | `/products/chairs`, `/dining-tables`, `/center-tables`, `/cabinets`, `/shoe-racks`, `/step-stools`, and one page per product (44), each with description, features, details table, FAQ, related products |
+| Better list experience | One "Add" button that turns into a - 1 + stepper in place, an "Added" message with a "View list" button, a list drawer with 3 clear steps, free-delivery progress bar, list saved on the phone, the WhatsApp message carries each product's page link |
+| Page flashes/waits before the site shows | Every page is built as real HTML at build time, so content shows immediately. The 3D hero is optional and starts after the page is usable (large screens only). The old "Loading the showroom" placeholder is gone |
+| Keywords customers search | Each page has its own title, description, headings and a "People also search for" list in English, Hindi, Gujarati and Hinglish, plus structured data (LocalBusiness, Product, Breadcrumb, FAQ) |
+| Hindi and Gujarati | `/hi/...` and `/gu/...` versions of every page, linked with hreflang, language switch in the header |
+| Local listing | See `LOCAL-LISTING.md` |
+
+## Live animations and 3D (what makes the site different)
+
+- **Live icons** (`src/components/LiveIcon.tsx`): the chair rocks, cabinet doors open, the pot lid bobs and steams, the pan tosses an egg, the flask steams, the truck drives. Plain CSS, no JavaScript.
+- **3D hero**: floating chairs, tables and cabinets that dodge your pointer and fly when you tap (`src/three/heroScene.ts`).
+- **Live showroom** (`src/components/LiveShowroom.tsx`): lit stage, swinging price tag, glowing ring, photo that tilts in 3D, optional spinning 3D model, shelf where products drop in, live tour.
+- **3D showroom carousel** on the home page, **3D viewer + AR** on product pages, **dining set builder** (`/dining-set-builder`), **fly-to-list** animation.
+- **Page effects** (`src/components/Fx.tsx`): glowing cursor, magnetic buttons, cards that light up and tilt, scroll progress bar, brand strip that skews with scroll speed. All switch off for visitors who ask for reduced motion.
+
+## Commands
+
+```
 npm install
-npm run dev      # development at http://localhost:5173
-npm run build    # production files in /dist
+npm run dev        # work on the site locally
+npm run build      # builds every page into /dist (about 195 HTML files) + sitemap.xml + robots.txt
+npm run preview    # look at the built site
 ```
 
-## What changed
-- New logo (`public/images/logo.svg`, used by `src/components/Logo.tsx`) and a site-wide palette limited to the logo's red, blue, navy and white.
-- Full-width layout with animated hero (falling items + rotating 3D product), brand strips, feature cards, counters and footer.
-- New "Live Showroom" for products: choose a product, then choose a company (brand filter with counts), optional price sort and an automatic "Live tour". The selected item shows on a spotlight turntable with a swinging price tag, and every item sits on an animated shelf.
-- Each product has WhatsApp and Call buttons, and the free-delivery rule (10+ chairs) is shown.
-- "Send a photo" section, and an Android-style bottom tab bar on phones.
-- Removed the old `scenes/`, `StickyCTA.tsx` and the old `App.tsx`; they are replaced by `src/components/*` (products live in `Showroom.tsx` and `Stage.tsx`).
-  `package.json` is unchanged, so `@react-three/*`, `drei` and `framer-motion` are no longer used and can be removed later with `npm uninstall`.
+## Before you go live (important)
 
-## 3D hero (WebGL) and effects
-- `src/three/heroScene.ts`: the full-screen hero. A flowing shader background, 14 glossy furniture models lit with studio reflections, glowing orbit rings with bloom, particle dust, pointer-dodging physics, tap-to-scatter, phone tilt (Android), and a camera that dives as you scroll. Change the products shown in the `SPEC` list and the colours in `COLORS`.
-- `src/components/Fx.tsx`: glowing cursor, magnetic buttons, card spotlight, scroll-speed skew on the brand strip (mouse effects are off on touch screens).
-- Everything switches to a calm still picture when the visitor's device is set to "reduce motion".
+1. **Domain:** set your real address in `site.config.json` (`siteUrl`), then run `npm run build`. Everything (canonical links, hreflang, sitemap, share previews) uses it.
+2. **Shop timings, phone, address:** edit `src/config.ts`. Fill `HOURS` and `SAME_AS` when you have them.
+3. **Check the content marked below.** I wrote it from your business card, your old site and public product information, and I could not confirm everything.
 
-## Enquiry list and WhatsApp photos
-- Customers add showroom products (with quantity) and store departments to one "My list", then send everything in one WhatsApp message.
-- For showroom products that have a real photo, the message contains the photo link, so WhatsApp shows the picture and you can recognise the exact item.
-- WhatsApp cannot attach a file from a web link, so the photo travels as a link. The link only works when the website is published online (or while your ngrok link is running), because it points to `public/images/products/`.
-- Chairs in the list fill a "free delivery" bar that unlocks at 10 chairs.
+## Please confirm these (I could not verify them)
 
-## Add real product photos
-1. Put the photo in `public/images/products/` (any folder inside `public/images` also works).
-2. Name it after the product: brand + model, for example `nilkamal-paradise.jpg`. Capital letters, spaces, `_` instead of `-`, and the type (`.jpg`, `.jpeg`, `.png`, `.webp`) do not matter, so `Nilkamal_Paradise.jpeg` works too.
-3. That is all. While `npm run dev` is running the page reloads by itself. In a production build, run `npm run build` again.
-4. The real photo replaces the sample 3D model on the shelf card and on the spotlight stage. Products without a photo keep the 3D model.
-5. If a file in `images/products` matches no product, the browser console (F12) lists it with an example of a correct name.
+- Prices in `src/data/products.ts` were carried over from the old site. Remove a price to show "Ask for rate".
+- "Free delivery on 10+ chairs", "25+ years", "reply within 1 to 2 hours" and the list of brands "available on request" (Supreme, Varmora, Royal) were carried over from the old site.
+- Department item lists (`src/data/departments.ts`, for example what "Home Appliances" includes) are typical items; edit them to match what you really stock.
+- Product facts: only facts I could check on the maker's own listing or printed on the maker's product picture are shown as product-specific (Nilkamal Paradise, CHR2061, Shahenshah, Breeze, Freedom; sizes of National Jaipur table, Party Round Roma table and Power Series cabinets; the Muraj "4-year guarantee" printed in its picture). Everything else is general for that product type. Add more in `FACTS` in `src/data/products.ts`.
+- **Hindi and Gujarati text should be read by a native speaker** (you or your family) before launch. A few small edits will make it sound more natural.
+- A few product photos are very small (for example `cello-novelty-2-foot`). Replace them with larger photos using the same file name.
 
-### Turn-around view with real photos (optional)
-Real 3D cannot be made from one photo. Add more angles with the same name plus `-2`, `-3` (or `_2`, `_3`): `nilkamal-paradise.jpg`, `nilkamal-paradise-2.jpg`, `nilkamal-paradise-3.jpg` ... The customer drags left or right to turn the product. Use 8 to 16 photos, same distance and height, for a smooth spin.
+## How to add or edit things
 
-Tip: clear, plain-background photo, about 1200 px wide, under 300 KB.
+- **Add a product:** put the photo in `public/images/products/` named `brand-model.jpeg` (lowercase, dashes, for example `sky-titan.jpeg`) and add one line in `src/data/products.ts`. The page, sitemap entry and Hindi/Gujarati versions are created automatically.
+- **Change text:** category text is in `src/data/categories.ts`, department text in `src/data/departments.ts`, page text in `src/data/pages.ts`, buttons and labels in `src/i18n.tsx`. Each text has three versions in the order English, Hindi, Gujarati.
 
-| Category | Product | Save the photo as (in `public/images/products/`) |
-|---|---|---|
-| Chairs | Nilkamal CHR2061 | `nilkamal-chr2061.jpg` |
-| Chairs | Nilkamal Paradise | `nilkamal-paradise.jpg` |
-| Chairs | Nilkamal Mystique | `nilkamal-mystique.jpg` |
-| Chairs | National Delhi Model | `national-delhi-model.jpg` |
-| Chairs | National Puna Unbreakable | `national-puna-unbreakable.jpg` |
-| Chairs | National Spinnex | `national-spinnex.jpg` |
-| Chairs | National Bentley (Relax Chair) | `national-bentley-relax-chair.jpg` |
-| Chairs | National Polo Baby Chair | `national-polo-baby-chair.jpg` |
-| Chairs | Cello Unique | `cello-unique.jpg` |
-| Chairs | Cello Ultra Mac | `cello-ultra-mac.jpg` |
-| Chairs | Cello Comfort Easy | `cello-comfort-easy.jpg` |
-| Chairs | Cello Mayor (Very Premium) | `cello-mayor-very-premium.jpg` |
-| Chairs | Muraj Creata | `muraj-creata.jpg` |
-| Chairs | Muraj Swift | `muraj-swift.jpg` |
-| Chairs | Muraj Breazza | `muraj-breazza.jpg` |
-| Chairs | Sky Titan | `sky-titan.jpg` |
-| Chairs | Sky Cushion | `sky-cushion.jpg` |
-| Chairs | Sky Spine Chair | `sky-spine-chair.jpg` |
-| Chairs | Sky Megna | `sky-megna.jpg` |
-| Chairs | Sky Texas | `sky-texas.jpg` |
-| Dining Tables | National Jaipur Dining Table | `national-jaipur-dining-table.jpg` |
-| Dining Tables | National Jaipur Roma Dining Table | `national-jaipur-roma-dining-table.jpg` |
-| Dining Tables | National Party Round Dining Table | `national-party-round-dining-table.jpg` |
-| Dining Tables | National Party Round Roma Dining Table | `national-party-round-roma-dining-table.jpg` |
-| Dining Tables | Nilkamal Shahensha | `nilkamal-shahensha.jpg` |
-| Dining Tables | Nilkamal Shahensha Cross | `nilkamal-shahensha-cross.jpg` |
-| Dining Tables | Cello Senator | `cello-senator.jpg` |
-| Dining Tables | Cello Proline | `cello-proline.jpg` |
-| Center Tables | National Spectra | `national-spectra.jpg` |
-| Center Tables | National Rajkot | `national-rajkot.jpg` |
-| Center Tables | National Elegant | `national-elegant.jpg` |
-| Center Tables | Nilkamal Breeze (Glass Top) | `nilkamal-breeze-glass-top.jpg` |
-| Center Tables | Nilkamal Center Table 1 (With Glass) | `nilkamal-center-table-1-with-glass.jpg` |
-| Cabinets | National Power Series, 4 Foot | `national-power-series-4-foot.jpg` |
-| Cabinets | National Power Series, 2 Foot | `national-power-series-2-foot.jpg` |
-| Cabinets | Cello Novelty, 2 Foot | `cello-novelty-2-foot.jpg` |
-| Cabinets | Nilkamal Freedom, 2 Foot | `nilkamal-freedom-2-foot.jpg` |
-| Shoe Racks | National Power Small Shoe Rack | `national-power-small-shoe-rack.jpg` |
-| Shoe Racks | National Power Big Shoe Rack | `national-power-big-shoe-rack.jpg` |
-| Step Stools | National Sigma Step-In | `national-sigma-step-in.jpg` |
-| Step Stools | Nilkamal Stool 21 | `nilkamal-stool-21.jpg` |
-| Step Stools | Nilkamal Stool 31 | `nilkamal-stool-31.jpg` |
-| Step Stools | Seatex Eiffel | `seatex-eiffel.jpg` |
+## Hosting
 
-For any new product, the name follows the same rule: `slugOf(brand, name)` in `src/data/products.ts`.
+Works on Cloudflare Pages, Vercel and Netlify. Build command `npm run build`, output folder `dist`. Pages are saved as `name.html`, which all three serve at the clean address (`/products/chairs`, no `.html`). Unknown addresses show `404.html`.
 
-## Where to edit things
-- Products, prices, brands, ranges: `src/data/products.ts` (leave the price out to show "Ask for rate")
-- Phone number and WhatsApp number: `src/config.ts`
-- Founder tribute text and photo (Visit section): `src/data/founder.ts` and `public/images/founder.jpg`
-- Colours and layout: `src/index.css` (top of file)
-- Shop photo: `public/images/shop.jpg`
-- Logo: `src/components/logoSvg.ts` and `public/images/logo.svg`
+## Other notes
 
-## Structure
-```
-src/
-  App.tsx                  page order
-  config.ts                phone + image settings
-  data/products.ts         products and prices
-  three/models.ts          3D furniture models + thumbnails
-  hooks/usePhoto.ts        finds real photos automatically
-  components/              Hero, Showroom, Stage, Enquiry, Sections, Chrome, Logo, Icon
-  state/Enquiry.tsx        the shared enquiry list + WhatsApp message builder
-public/images/             logo, shop photo, products/ (your photos)
-```
-
-## Deploy
-Run `npm run build` and upload the `dist` folder to any host (Vercel, Netlify, etc.).
+- `.env.production` (it held a placeholder domain that overrode your real one) was removed; `site.config.json` is now the only place for the address.
+- Missing files that the old HTML pointed to (`icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `og-image.jpg`) were created.
+- Removed: the old `srcc` backup folder, the nested `patel-selection.zip`, and two unused images. The business card image moved to `assets-src/`.
+- `/my-list` is set to "noindex" on purpose (it is personal and has no content for search).
