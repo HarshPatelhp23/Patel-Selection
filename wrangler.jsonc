@@ -1,0 +1,12 @@
+{
+  // Tells Cloudflare to publish the finished site (the "dist" folder) as plain static files.
+  // Without this file, `wrangler deploy` tries to auto-configure the project and breaks the page-building step.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "patel-selection",
+  "compatibility_date": "2026-10-12",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
